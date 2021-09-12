@@ -1,6 +1,5 @@
 package ru.snowmaze.moviecatalog.data
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.snowmaze.moviecatalog.data.network.sources.MoviesNetworkSource
@@ -25,7 +24,6 @@ class MoviesRepositoryImpl(
         }
         return withContext(Dispatchers.IO) {
             val favorites = persistenceSource.getAllFavorites()
-            Log.d("MyActivity", "favorites $favorites")
             result.map { networkEntity ->
                 networkEntity.toDomainModel(isFavorite = favorites.find {
                     networkEntity.id == it.id
