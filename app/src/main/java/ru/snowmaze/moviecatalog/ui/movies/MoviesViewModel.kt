@@ -69,26 +69,22 @@ class MoviesViewModel @Inject constructor(private val moviesRepository: MoviesRe
         }
     }
 
-    fun onFavoriteClick(movie: Movie) {
+    fun onFavoriteClick(clickedMovie: Movie) {
 
         // TODO можно приделать обновление через payload в адаптере
         viewModelScope.launch(Dispatchers.IO) {
-            var newList = _movies.value ?: emptyList()
-            if (movie.isFavorite) {
-                newList = newList.map {
-                    if (it.id == movie.id) it.copy(isFavorite = false)
-                    else it
-                }
-                moviesRepository.removeFavorite(movie.copy(isFavorite = false))
-            } else {
-                newList = newList.map {
-                    if (it.id == movie.id) it.copy(isFavorite = true)
-                    else it
-                }
-                moviesRepository.addFavorite(movie.copy(isFavorite = true))
+            val movie = clickedMovie.copy(isFavorite = !clickedMovie.isFavorite)
+            val newList = (_movies.value ?: emptyList()).map {
+                if (it.id == movie.id) movie
+                else it
             }
             withContext(Dispatchers.Main) {
                 _movies.value = newList.toList()
+            }
+            if (movie.isFavorite) {
+                moviesRepository.addFavorite(movie)
+            } else {
+                moviesRepository.removeFavorite(movie)
             }
         }
     }
